@@ -49,7 +49,7 @@
     <section id="audio" class="panel">
       <h2>Experience a Moment of Calm</h2>
       <p>Press play and take a one-minute preview of a MindWave Journey. Just close your eyes, breathe, and listen. <em>Headphones recommended.</em></p>
-      <audio controls src="audio/sample.mp3">Your browser does not support audio.</audio>
+      <audio id="sample-audio" controls src="audio/sample.mp3">Your browser does not support audio.</audio>
     </section>
 
     <section id="social-proof" class="panel">
@@ -90,12 +90,47 @@
     <section id="final" class="panel">
       <h2>Your Nervous System Deserves a Reset</h2>
       <p>The modern world constantly pushes the brain into stress and stimulation. MindWave Journeys are designed to help you return to <strong>calm, clarity, and presence</strong> in just a few minutes a day.</p>
-      <a class="btn primary" href="#early-access">Start Your First Journey</a>
+      <button class="btn primary" id="final-cta">Start Your First Journey</button>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container">© MindWave Journeys — mindwavejourneys.com</div>
   </footer>
+
+  <script>
+    // Smooth CTA navigation
+    document.querySelectorAll('a[href^="#"]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(btn.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({behavior: 'smooth', block: 'start'});
+          if (target.id === 'audio') {
+            const audio = document.getElementById('sample-audio');
+            if (audio) { audio.play().catch(() => {}); }
+          }
+        }
+      });
+    });
+
+    document.getElementById('final-cta')?.addEventListener('click', () => {
+      document.getElementById('early-access')?.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+
+    // Auto-play sample if visible
+    const sample = document.getElementById('sample-audio');
+    if (sample) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            sample.play().catch(() => {});
+            observer.disconnect();
+          }
+        });
+      }, {threshold: 0.5});
+      observer.observe(sample);
+    }
+  </script>
 </body>
 </html>
