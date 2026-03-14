@@ -10,8 +10,9 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial
 #bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(6%) contrast(0.95) brightness(0.6)}
 .overlay{position:absolute;inset:0;background:linear-gradient(180deg, rgba(239,236,231,0.35), rgba(239,236,231,0.7))}
 .hero-content{position:relative;text-align:center;padding:48px}
-.hero h1{font-size:clamp(2rem,6vw,3.6rem);margin:0 0 12px;letter-spacing:0.2px}
-.tag{color:var(--muted);font-size:1.05rem;margin-bottom:18px}
+.hero h1{font-size:clamp(2rem,6vw,3.6rem);margin:0 0 12px;letter-spacing:0.2px;color:#fff}
+.hero-content p, .hero-content .micro, .hero-content .tag{color:#f7f7f7}
+.tag{font-size:1.05rem;margin-bottom:18px}
 .btn{display:inline-block;padding:12px 20px;border-radius:12px;text-decoration:none;color:inherit;border:1px solid transparent;transition:transform .28s cubic-bezier(.2,.9,.2,1),box-shadow .28s}
 .btn.primary{background:var(--accent);color:#042a36;font-weight:600;box-shadow:0 6px 18px rgba(15,23,36,0.08)}
 .btn.primary:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(15,23,36,0.12)}
@@ -44,3 +45,4 @@ blockquote{margin:10px 0 0;border-left:4px solid rgba(15,23,36,0.25);padding-lef
 
 @media(max-width:720px){.container{padding:20px}.hero{min-height:60vh}.hero-content{padding:28px}form{flex-direction:column;align-items:stretch} }
 
+ b
