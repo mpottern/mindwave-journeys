@@ -5,8 +5,8 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-.site-nav{position:fixed;top:0;left:0;right:0;z-index:30;background:rgba(9,17,29,0.9);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.18);padding:2px 0;min-height:42px}
-.nav-content{max-width:1100px;margin:0 auto;padding:2px 10px;display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:.92rem;min-height:38px}
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:30;background:rgba(9,17,29,0.45);backdrop-filter:blur(4px);border-bottom:1px solid rgba(255,255,255,0.1);padding:2px 0;min-height:38px}
+.nav-content{max-width:1100px;margin:0 auto;padding:4px 12px;display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:.92rem;min-height:36px}
 .brand{font-size:1.15rem;letter-spacing:.2px;font-weight:700}
 .nav-links a{font-size:.85rem;padding:3px 8px;line-height:1.3;}
 
