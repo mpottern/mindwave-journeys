@@ -15,7 +15,8 @@ body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial
 .hero{position:relative;min-height:70vh;display:flex;align-items:center;justify-content:center;overflow:hidden;padding-top:50px}
 #bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(6%) contrast(0.95) brightness(0.6)}
 .overlay{position:absolute;inset:0;background:linear-gradient(180deg, rgba(15,23,36,0.55), rgba(15,23,36,0.45))}
-.hero-content{position:relative;text-align:center;padding:48px}
+.hero-content{position:relative;text-align:center;padding:48px;color:#fff}
+.hero-content p{color:#fff}
 .hero h1{font-size:clamp(2rem,6vw,3.6rem);margin:0 0 12px;letter-spacing:0.2px;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.35)}
 .tag{color:#f8f9ff;opacity:.95;font-size:1.05rem;margin-bottom:18px;text-shadow:0 1px 8px rgba(0,0,0,.25)}
 .btn{display:inline-block;padding:12px 20px;border-radius:12px;text-decoration:none;color:inherit;border:1px solid transparent;transition:transform .28s cubic-bezier(.2,.9,.2,1),box-shadow .28s}
