@@ -26,6 +26,10 @@ TOKEN_FILE = os.environ.get("MOGS_TOKEN_FILE", "token.json")
 LABEL_NAME = os.environ.get("MOGS_LABEL", "mogs")
 # Label applied after a message is filed, so it isn't picked up again.
 DONE_LABEL_NAME = os.environ.get("MOGS_DONE_LABEL", "mogs-filed")
+# The address you forward mail to; used only in setup hints. The tool itself
+# reads by label, so this just needs to match the filter that applies the label
+# in whichever account authorizes the OAuth token.
+FORWARD_ADDR = os.environ.get("MOGS_FORWARD_ADDR", "michael+mogs@denverzenden.com")
 
 
 @dataclass
@@ -108,7 +112,7 @@ class GmailSource:
         if not self.label_id:
             raise SystemExit(
                 f"Label {LABEL_NAME!r} not found in Gmail. Create it and add a "
-                f"filter for To: mpottern+{LABEL_NAME}@gmail.com first."
+                f"filter for To: {FORWARD_ADDR} first."
             )
         self.done_label_id = _label_id(self.svc, DONE_LABEL_NAME, create=True)
 

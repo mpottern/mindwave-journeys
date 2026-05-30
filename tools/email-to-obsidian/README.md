@@ -1,6 +1,6 @@
 # Email → Obsidian flow (`mogs`)
 
-Forward an email to **`mpottern+mogs@gmail.com`**, and this tool reads it from
+Forward an email to **`michael+mogs@denverzenden.com`**, and this tool reads it from
 the Gmail `mogs` label, asks Claude *"what kind of note is this?"*, and files a
 markdown note into your Obsidian vault — routed by type, with frontmatter, tags,
 a summary, and any action items.
@@ -31,8 +31,11 @@ forward email ──► Gmail `mogs` label ──► Claude classifies ──►
    ```
 
 2. **Gmail filter + label** (in Gmail settings, once):
-   - Filter `To: mpottern+mogs@gmail.com` → apply label **`mogs`** (and optionally Skip the Inbox).
+   - Filter `To: michael+mogs@denverzenden.com` → apply label **`mogs`** (and optionally Skip the Inbox).
    - The label already exists in your account.
+   - The hub is whichever account authorizes `token.json` (step 3); forward mail
+     so it lands there with the `mogs` label. Override the address with
+     `MOGS_FORWARD_ADDR` if you use a different mailbox.
 
 3. **Gmail API credentials**
    - In [Google Cloud Console](https://console.cloud.google.com/): create a project → enable the **Gmail API** → **OAuth client ID** of type **Desktop app** → download the JSON as `credentials.json` into this folder.
