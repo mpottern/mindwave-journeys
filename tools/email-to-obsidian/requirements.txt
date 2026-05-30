@@ -3,3 +3,4 @@ pydantic>=2
 google-api-python-client>=2
 google-auth>=2
 google-auth-oauthlib>=1
+youtube-transcript-api>=1

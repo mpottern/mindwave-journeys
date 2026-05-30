@@ -19,7 +19,23 @@ forward email ──► Gmail `mogs` label ──► Claude classifies ──►
 | `taxonomy.py` | The note types + folder mapping. **Edit this to change your buckets.** |
 | `classifier.py` | Calls Claude with structured output + prompt caching. |
 | `gmail_source.py` | Reads the `mogs` label, marks mail filed. |
+| `youtube.py` | Detects a YouTube link, fetches title + transcript. |
 | `vault_writer.py` | Renders markdown, writes to the vault, commits/pushes. |
+
+## YouTube videos
+
+If a forwarded email contains a YouTube link (`youtube.com/watch`, `youtu.be`,
+`/shorts/`, `/live/`), it's handled by a dedicated path instead of the email
+classifier:
+
+1. Fetch the video title + channel (YouTube oEmbed, no API key).
+2. Fetch the transcript (`youtube-transcript-api` — the video's captions).
+3. Ask Claude for a summary + key points.
+4. Write a note to `Flow/Videos/` with the summary, key points, and the **full
+   raw transcript** below.
+
+Just forward the YouTube share email to `mpottern+mogs@gmail.com` like anything
+else. Videos with no captions still get a note (link + "no transcript available").
 
 ## One-time setup
 
