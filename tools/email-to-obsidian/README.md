@@ -68,6 +68,11 @@ Once `token.json` exists, schedule it (set `MOGS_GIT_PUSH=1` so notes sync):
 
 ## Notes
 
+- **The vault is a separate git repo from `mindwave-journeys`.** `MOGS_VAULT`
+  must point at your **Obsidian vault**, not at this repo. This tool lives in
+  `mindwave-journeys`, but it writes and commits notes into whatever vault repo
+  `MOGS_VAULT` points to. Don't set `MOGS_VAULT` to the `mindwave-journeys`
+  checkout.
 - **Model:** defaults to `claude-opus-4-8`. For cheaper high-volume runs set
   `MOGS_MODEL=claude-haiku-4-5`.
 - **Cost control:** the stable system prompt is prompt-cached and the email body
