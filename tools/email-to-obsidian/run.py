@@ -19,9 +19,16 @@ import sys
 
 import anthropic
 
-from classifier import classify
+import youtube
+from classifier import classify, summarize_video
 from gmail_source import GmailSource
-from vault_writer import commit_and_push, render, write_note
+from vault_writer import (
+    commit_and_push,
+    render,
+    render_video,
+    write_note,
+    write_video_note,
+)
 
 
 def main() -> int:
@@ -38,6 +45,29 @@ def main() -> int:
     print(f"Found {len(emails)} email(s) in the mogs queue.\n")
     written = []
     for email in emails:
+        # YouTube branch: if the email contains a video link, save its transcript.
+        video_id = youtube.find_video_id(f"{email.subject}\n{email.body}")
+        if video_id:
+            video = youtube.fetch(video_id)
+            s = summarize_video(client, video.title, video.channel, video.transcript)
+            chars = len(video.transcript)
+            print(f"[video] {s.title}")
+            print(f"    channel: {video.channel} | transcript: {chars} chars")
+            print(f"    tags: {', '.join(s.tags)}")
+
+            if dry_run:
+                print("    --- dry run, note not written ---")
+                print(render_video(s, video, email.sender))
+                print()
+                continue
+
+            path = write_video_note(s, video, email.sender)
+            written.append(path)
+            print(f"    wrote {path}")
+            source.mark_filed(email)
+            print("    marked filed in Gmail\n")
+            continue
+
         c = classify(client, email.subject, email.sender, email.body)
         print(f"[{c.type}] {c.title}")
         print(f"    tags: {', '.join(c.tags)}")

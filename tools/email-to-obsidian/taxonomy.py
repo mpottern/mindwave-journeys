@@ -43,6 +43,11 @@ NOTE_TYPES: dict[str, tuple[str, str]] = {
         "An article, newsletter, or long-form piece forwarded purely to read "
         "later, with no added action or intent from the forwarder.",
     ),
+    "video": (
+        "Videos",
+        "A YouTube video forwarded to save its transcript. Handled by a "
+        "dedicated path (transcript + summary), not the email classifier.",
+    ),
 }
 
 # Fallback bucket if the model returns something unexpected.

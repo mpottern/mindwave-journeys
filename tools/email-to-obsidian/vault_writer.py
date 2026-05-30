@@ -13,8 +13,9 @@ import re
 import subprocess
 from pathlib import Path
 
-from classifier import Classification
+from classifier import Classification, VideoSummary
 from taxonomy import subfolder_for
+from youtube import Video
 
 VAULT = Path(os.environ.get("MOGS_VAULT", "")).expanduser()
 FLOW_DIR = os.environ.get("MOGS_FLOW_DIR", "Flow")
@@ -75,6 +76,54 @@ def write_note(c: Classification, sender: str, body: str) -> Path:
         n += 1
 
     path.write_text(render(c, sender, body), encoding="utf-8")
+    return path
+
+
+def render_video(s: VideoSummary, video: Video, sender: str) -> str:
+    created = dt.date.today().isoformat()
+    tags = ", ".join(s.tags)
+    fm = [
+        "---",
+        "type: video",
+        f"created: {created}",
+        "source: youtube",
+        f"from: {sender}",
+        f"url: {video.url}",
+        f"channel: {video.channel}",
+        f"tags: [{tags}]",
+        "---",
+    ]
+    parts = ["\n".join(fm), "", f"# {s.title}", ""]
+    parts += [f"> {s.summary}", "", f"[Watch on YouTube]({video.url})", ""]
+    if s.key_points:
+        parts.append("## Key points")
+        parts += [f"- {kp}" for kp in s.key_points]
+        parts.append("")
+    parts.append("## Transcript")
+    parts.append("")
+    parts.append(video.transcript.strip() or "_(no transcript available)_")
+    parts.append("")
+    return "\n".join(parts)
+
+
+def write_video_note(s: VideoSummary, video: Video, sender: str) -> Path:
+    if not VAULT or not VAULT.exists():
+        raise SystemExit(
+            f"Vault path {str(VAULT)!r} does not exist. Set MOGS_VAULT to your "
+            "Obsidian vault (a git repo)."
+        )
+    folder = VAULT / FLOW_DIR / subfolder_for("video")
+    folder.mkdir(parents=True, exist_ok=True)
+
+    created = dt.date.today().isoformat()
+    base = f"{created}-{_slug(s.title)}"
+    path = folder / f"{base}.md"
+    n = 2
+    while path.exists():
+        path = folder / f"{base}-{n}.md"
+        n += 1
+
+    path.write_text(render_video(s, video, sender), encoding="utf-8")
     return path
 
 
