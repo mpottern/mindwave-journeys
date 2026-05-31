@@ -70,6 +70,14 @@ python run.py --dry-run
 python run.py
 ```
 
+Or use the wrapper, which activates the venv and loads `.env` for you (handy in
+a fresh terminal) — run it as a file, don't paste its contents:
+
+```bash
+./mogs.sh --dry-run
+./mogs.sh
+```
+
 First run opens a browser to authorize Gmail; the token is cached in `token.json`
 for non-interactive runs afterward.
 
