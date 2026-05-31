@@ -3,3 +3,6 @@ pydantic>=2
 google-api-python-client>=2
 google-auth>=2
 google-auth-oauthlib>=1
+# Optional: transcripts for forwarded YouTube links. Title/channel still work
+# without it (via oEmbed); only the transcript block needs this.
+youtube-transcript-api>=0.6

@@ -22,6 +22,7 @@ import anthropic
 from classifier import classify
 from gmail_source import GmailSource
 from vault_writer import commit_and_push, render, write_note
+from youtube import enrich
 
 
 def main() -> int:
@@ -38,7 +39,10 @@ def main() -> int:
     print(f"Found {len(emails)} email(s) in the mogs queue.\n")
     written = []
     for email in emails:
-        c = classify(client, email.subject, email.sender, email.body)
+        # Pull in YouTube title/transcript so a "watch this" link becomes a real
+        # note instead of a bare URL. No-op for emails without a YouTube link.
+        body = enrich(email.body)
+        c = classify(client, email.subject, email.sender, body)
         print(f"[{c.type}] {c.title}")
         print(f"    tags: {', '.join(c.tags)}")
         if c.action_items:
@@ -46,11 +50,11 @@ def main() -> int:
 
         if dry_run:
             print("    --- dry run, note not written ---")
-            print(render(c, email.sender, email.body))
+            print(render(c, email.sender, body))
             print()
             continue
 
-        path = write_note(c, email.sender, email.body)
+        path = write_note(c, email.sender, body)
         written.append(path)
         print(f"    wrote {path}")
         source.mark_filed(email)

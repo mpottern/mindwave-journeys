@@ -40,8 +40,8 @@ NOTE_TYPES: dict[str, tuple[str, str]] = {
     ),
     "reading": (
         "Reading",
-        "An article, newsletter, or long-form piece forwarded purely to read "
-        "later, with no added action or intent from the forwarder.",
+        "An article, newsletter, video, or talk forwarded purely to read or "
+        "watch later, with no added action or intent from the forwarder.",
     ),
 }
 

@@ -19,7 +19,15 @@ forward email ──► Gmail `mogs` label ──► Claude classifies ──►
 | `taxonomy.py` | The note types + folder mapping. **Edit this to change your buckets.** |
 | `classifier.py` | Calls Claude with structured output + prompt caching. |
 | `gmail_source.py` | Reads the `mogs` label, marks mail filed. |
+| `youtube.py` | Turns a forwarded YouTube link into title + channel + transcript. |
 | `vault_writer.py` | Renders markdown, writes to the vault, commits/pushes. |
+
+**YouTube links:** forward a "watch this" email and the note gets the video's
+title, channel, and (when available) full transcript instead of a bare URL — so
+the classifier files it sensibly and the note is useful on its own. Title and
+channel come from YouTube's public oEmbed (no API key); the transcript needs the
+optional `youtube-transcript-api` dependency. Tune limits with
+`MOGS_MAX_TRANSCRIPT_CHARS` (default 8000) and `MOGS_HTTP_TIMEOUT`.
 
 ## One-time setup
 
