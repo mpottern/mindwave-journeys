@@ -1,6 +1,11 @@
 .env
 credentials.json
 token.json
+# Google Cloud Console downloads the OAuth client as this filename; ignore it
+# whether or not it's been renamed to credentials.json, so the client secret
+# can never be committed.
+client_secret_*.json
+*.apps.googleusercontent.com.json
 __pycache__/
 *.pyc
 .venv/
