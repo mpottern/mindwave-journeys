@@ -40,9 +40,10 @@ def main() -> int:
     written = []
     for email in emails:
         # Pull in YouTube title/transcript so a "watch this" link becomes a real
-        # note instead of a bare URL. No-op for emails without a YouTube link.
-        body = enrich(email.body)
-        c = classify(client, email.subject, email.sender, body)
+        # note instead of a bare URL, and keep the note's Source clean. No-op for
+        # emails without a YouTube link (beyond capping a long body).
+        enriched = enrich(email.body)
+        c = classify(client, email.subject, email.sender, enriched.classify_text)
         print(f"[{c.type}] {c.title}")
         print(f"    tags: {', '.join(c.tags)}")
         if c.action_items:
@@ -50,11 +51,11 @@ def main() -> int:
 
         if dry_run:
             print("    --- dry run, note not written ---")
-            print(render(c, email.sender, body))
+            print(render(c, email.sender, enriched.source_text))
             print()
             continue
 
-        path = write_note(c, email.sender, body)
+        path = write_note(c, email.sender, enriched.source_text)
         written.append(path)
         print(f"    wrote {path}")
         source.mark_filed(email)

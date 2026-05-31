@@ -34,6 +34,10 @@ OEMBED = "https://www.youtube.com/oembed"
 TIMEOUT = float(os.environ.get("MOGS_HTTP_TIMEOUT", "10"))
 # Cap transcript length so a long video doesn't blow up token cost or note size.
 MAX_TRANSCRIPT_CHARS = int(os.environ.get("MOGS_MAX_TRANSCRIPT_CHARS", "8000"))
+# Cap a non-video note's Source section so a long newsletter doesn't produce a
+# giant, tracking-link-laden note. Video notes are exempt -- their Source is the
+# clean transcript block, already bounded by MAX_TRANSCRIPT_CHARS.
+MAX_SOURCE_CHARS = int(os.environ.get("MOGS_MAX_SOURCE_CHARS", "2000"))
 
 
 @dataclass
@@ -43,6 +47,15 @@ class Video:
     title: Optional[str] = None
     author: Optional[str] = None
     transcript: Optional[str] = None
+
+
+@dataclass
+class Enrichment:
+    """Two views of an email body for the pipeline."""
+
+    classify_text: str  # full signal for the model: original body + video blocks
+    source_text: str  # clean text for the note's Source section
+    has_video: bool
 
 
 def extract_video_ids(text: str) -> List[str]:
@@ -102,38 +115,45 @@ def describe(video_id: str) -> Video:
     )
 
 
-def enrich(body: str) -> str:
-    """Append a title/channel/transcript block for any YouTube links in ``body``.
+def _video_block(v: Video) -> str:
+    lines = [f"## Video: {v.title or v.url}"]
+    if v.author:
+        lines.append(f"- Channel: {v.author}")
+    lines.append(f"- Link: {v.url}")
+    if v.transcript:
+        lines += ["", "### Transcript", "", v.transcript]
+    else:
+        lines += ["", "_(no transcript available)_"]
+    return "\n".join(lines)
 
-    Returns the body unchanged when there are no links, so it's safe to call on
-    every email. The added text is what turns a "watch this" link into a note
-    worth keeping.
+
+def enrich(body: str) -> Enrichment:
+    """Resolve a raw email body into model-facing and note-facing text.
+
+    For a forwarded YouTube link the note's Source becomes a clean
+    title/channel/transcript block -- the forwarded email's signature and
+    tracking-link cruft are dropped -- while the classifier still sees the
+    original text *and* the transcript for maximum signal. For everything else
+    the Source is the body, capped so a long newsletter doesn't produce a giant
+    note. Safe to call on every email.
     """
+    body = body or ""
     ids = extract_video_ids(body)
+
     if not ids:
-        return body
+        source = body.strip()
+        if len(source) > MAX_SOURCE_CHARS:
+            source = source[:MAX_SOURCE_CHARS].rstrip() + "\n\n...[truncated]"
+        return Enrichment(classify_text=body, source_text=source, has_video=False)
 
-    blocks: List[str] = []
-    if body and body.strip():
-        blocks.append(body.strip())
-
-    for vid in ids:
-        v = describe(vid)
-        lines = ["", f"## Video: {v.title or v.url}"]
-        if v.author:
-            lines.append(f"- Channel: {v.author}")
-        lines.append(f"- Link: {v.url}")
-        if v.transcript:
-            lines += ["", "### Transcript", "", v.transcript]
-        else:
-            lines += ["", "_(no transcript available)_"]
-        blocks.append("\n".join(lines))
-
-    return "\n\n".join(blocks).strip()
+    blocks = "\n\n".join(_video_block(describe(vid)) for vid in ids)
+    original = body.strip()
+    classify_text = f"{original}\n\n{blocks}".strip() if original else blocks
+    return Enrichment(classify_text=classify_text, source_text=blocks, has_video=True)
 
 
 if __name__ == "__main__":  # quick manual check: python youtube.py <url-or-id>
     import sys
 
     arg = sys.argv[1] if len(sys.argv) > 1 else ""
-    print(enrich(arg))
+    print(enrich(arg).source_text)

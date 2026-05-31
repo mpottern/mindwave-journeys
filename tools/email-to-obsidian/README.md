@@ -24,10 +24,14 @@ forward email ──► Gmail `mogs` label ──► Claude classifies ──►
 
 **YouTube links:** forward a "watch this" email and the note gets the video's
 title, channel, and (when available) full transcript instead of a bare URL — so
-the classifier files it sensibly and the note is useful on its own. Title and
-channel come from YouTube's public oEmbed (no API key); the transcript needs the
-optional `youtube-transcript-api` dependency. Tune limits with
-`MOGS_MAX_TRANSCRIPT_CHARS` (default 8000) and `MOGS_HTTP_TIMEOUT`.
+the classifier files it sensibly and the note is useful on its own. The note's
+Source is just the clean title/channel/transcript (the forwarded email's
+signature and tracking links are dropped), while the classifier still sees the
+original text too. Title and channel come from YouTube's public oEmbed (no API
+key); the transcript needs the optional `youtube-transcript-api` dependency.
+Non-video notes cap their Source so a long newsletter doesn't bloat the note.
+Tune limits with `MOGS_MAX_TRANSCRIPT_CHARS` (default 8000),
+`MOGS_MAX_SOURCE_CHARS` (default 2000), and `MOGS_HTTP_TIMEOUT`.
 
 ## One-time setup
 
