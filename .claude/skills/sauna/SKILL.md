@@ -49,12 +49,22 @@ Items still carrying the **`mogs`** label are unfiled — that's the queue.
   - Flag guests whose `responseStatus` is `needsAction` (unconfirmed) — suggest
     a nudge tonight.
 
-### 4. Oura check-in (manual — no Oura API)
+### 4. Oura check-in
 
-Close by asking the user to read their Oura numbers off the app:
-**Readiness, Sleep score, HRV, and resting HR.** When they share them, interpret
-for *how to play tomorrow's load* given the calendar above (e.g. low readiness +
-a late evening session → protect the midday gap, hydrate, lighter morning).
+First try to pull the numbers live: run
+`python tools/oura/run.py --json` from the repo root (it reads `OURA_TOKEN`
+from `tools/oura/.env` or the environment).
+
+- **On success** (JSON with `readiness` / `sleep_score` / `hrv` / `resting_hr`):
+  report them and interpret for *how to play tomorrow's load* given the calendar
+  above (e.g. low readiness + a late evening session → protect the midday gap,
+  hydrate, lighter morning).
+- **On failure** (non-zero exit, `{"error": ...}`, or no token configured): fall
+  back to asking the user to read **Readiness, Sleep score, HRV, and resting HR**
+  off the app, then interpret the same way. Don't treat a missing token as a
+  blocker — the manual ask is the original behavior.
+
+Never invent values — only report what the tool returns or the user provides.
 
 ## Output Format
 
