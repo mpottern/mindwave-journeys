@@ -1,6 +1,6 @@
 # Draft Email — Kyle (Speakeasy): Dave Albano AI Talk
 
-**To:** Kyle (Speakeasy)
+**To:** Kyle (Speakeasy) — kyle@rapidharmony.com
 **Subject:** AI Talk for the Group — Nominating Dave Albano from the National Event
 
 ---
