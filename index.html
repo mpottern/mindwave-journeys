@@ -36,6 +36,35 @@
   </header>
 
   <main class="container">
+    <section id="picker" class="panel picker">
+      <h2>Find Your Journey</h2>
+      <p>How are you arriving right now? Tell us in a few words, or tap how you feel — we'll route you to the journey your nervous system actually needs.</p>
+
+      <form id="state-form" class="state-form" autocomplete="off">
+        <label class="sr-only" for="state-input">How are you feeling right now?</label>
+        <input id="state-input" name="state" type="text"
+               placeholder="e.g. my mind won't stop racing and I can't sleep">
+        <button class="btn primary" type="submit">Find my journey</button>
+      </form>
+
+      <div class="state-chips" id="state-chips" role="group" aria-label="Quick states">
+        <button type="button" class="chip" data-state="my mind is racing and I can't switch off">Racing thoughts</button>
+        <button type="button" class="chip" data-state="I'm wired but tired and can't sleep">Can't sleep</button>
+        <button type="button" class="chip" data-state="I'm scattered and can't focus on my work">Can't focus</button>
+        <button type="button" class="chip" data-state="I feel flat, heavy and burned out">Emotionally drained</button>
+        <button type="button" class="chip" data-state="I'm stressed and on edge">Stressed</button>
+      </div>
+
+      <div id="journey-result" class="journey-result" hidden aria-live="polite">
+        <p class="result-eyebrow">Your journey</p>
+        <h3 id="result-title"></h3>
+        <p id="result-summary" class="result-summary"></p>
+        <p class="result-action"><span class="action-label">First, right now:</span> <span id="result-action"></span></p>
+        <a id="result-cta" class="btn primary" href="#" target="_blank" rel="noopener">Begin this journey</a>
+        <p id="result-hint" class="micro result-hint" hidden>Not quite right? Add a word or two above and we'll re-route.</p>
+      </div>
+    </section>
+
     <section id="why" class="panel">
       <h2>A New Kind of Audio Experience</h2>
       <p>Most audio helps you relax for a moment. MindWave Journeys are designed to help your <strong>nervous system learn how to return to calm.</strong></p>
@@ -112,6 +141,45 @@
   <div class="sticky-cta">
     <a href="#early-access" class="btn primary">Join Early Access</a>
   </div>
+
+  <!-- State picker: product-side twin of the mogs email->note classifier -->
+  <script src="journey-taxonomy.js"></script>
+  <script src="journey-classifier.js"></script>
+  <script>
+    // Wire the "Find Your Journey" picker. Classifies the visitor's state
+    // (on intent, not surface symptom) and routes them to the matching journey.
+    (function () {
+      const form = document.getElementById('state-form');
+      const input = document.getElementById('state-input');
+      const chips = document.getElementById('state-chips');
+      const result = document.getElementById('journey-result');
+      if (!form || !window.JourneyClassifier) return;
+
+      function show(text) {
+        const r = window.JourneyClassifier.classify(text);
+        document.getElementById('result-title').textContent = r.title;
+        document.getElementById('result-summary').textContent = r.summary;
+        document.getElementById('result-action').textContent = r.action_items[0];
+        const cta = document.getElementById('result-cta');
+        cta.href = r.route;
+        document.getElementById('result-hint').hidden = r.confident;
+        result.hidden = false;
+        result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        show(input.value);
+      });
+
+      chips.addEventListener('click', e => {
+        const chip = e.target.closest('.chip');
+        if (!chip) return;
+        input.value = chip.dataset.state;
+        show(chip.dataset.state);
+      });
+    })();
+  </script>
 
   <script>
     // Smooth CTA navigation
