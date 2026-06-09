@@ -48,11 +48,29 @@ def _get(path: str, token: str, params: dict) -> list[dict]:
         with urllib.request.urlopen(req, timeout=30) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", "replace")[:200]
-        if exc.code in (401, 403):
+        detail = exc.read().decode("utf-8", "replace")[:300]
+        low = detail.lower()
+        # A sandboxed/remote environment can return 403 because its network
+        # policy blocks the host -- that's not a token problem. Distinguish it
+        # so the message doesn't send people chasing a perfectly good token.
+        if "allowlist" in low or "not in allowlist" in low:
             raise OuraError(
-                "Oura rejected the token (401/403). Check OURA_TOKEN is a valid "
-                "personal access token."
+                f"Network policy blocked the request to api.ouraring.com "
+                f"(HTTP {exc.code}: host not in allowlist). This is the "
+                "environment's network access policy, not your token -- add "
+                "'api.ouraring.com' to the environment's allowed domains, or run "
+                "where outbound access is open."
+            ) from exc
+        if exc.code == 401:
+            raise OuraError(
+                "Oura rejected the token (401). Check OURA_TOKEN is a valid, "
+                "non-revoked personal access token."
+            ) from exc
+        if exc.code == 403:
+            raise OuraError(
+                "Oura returned 403. Likely either the network policy is blocking "
+                "api.ouraring.com (add it to the environment's allowed domains) or "
+                "the token lacks scope -- the token value itself is probably fine."
             ) from exc
         raise OuraError(f"Oura API error {exc.code} on {path}: {detail}") from exc
     except urllib.error.URLError as exc:
